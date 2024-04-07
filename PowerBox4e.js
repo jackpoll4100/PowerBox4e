@@ -75,10 +75,21 @@
 
         const fileInputElement = document.getElementById('uploadedFile');
 
-        // Improved dice process with or handler and multiple dice matching.
-        function processDiceFormula(macroString, wDice){
+        // Improved dice process with 'or' handler and multiple dice matching.
+        function processDiceFormula(macroString, weapon){
+            // Construct the weapon dice from the first part of the damage formula (if applicable).
+            let wDice = '';
+            let diceNoSpaces = weapon?.Damage?.replaceAll(' ', '');
+            if (diceNoSpaces?.length > 2){
+                if (diceNoSpaces?.length > 3 && diceNoSpaces[3] !== '+'){
+                    wDice = `x${ diceNoSpaces.slice(0, 4) } (Roll: [[${ diceNoSpaces.slice(0, 4) }]])`;
+                }
+                else{
+                    wDice = `x${ diceNoSpaces.slice(0, 3) } (Roll: [[${ diceNoSpaces.slice(0, 3) }]])`;
+                }
+            }
             let statMods = window.foundCharacter.statMods;
-            let reconstructedString = macroString.replaceAll('[W]', `[[${ wDice }]]` || '[W]');
+            let reconstructedString = macroString.replaceAll('[W]', wDice || '[W]');
             if (statMods){
                 let stats = ['Charisma', 'Constitution', 'Dexterity', 'Strength', 'Wisdom', 'Intelligence'];
                 for (let stat of stats){
@@ -122,7 +133,7 @@
             for (let att of attributes){
                 if (power?.[att]?.replaceAll(' ', '') || weapon?.[att]?.replaceAll(' ', '')){
                     if (processForDice.includes(att)){
-                        macro += processDiceFormula(`{{${ att }=${ power[att] || weapon[att] }}}`);
+                        macro += processDiceFormula(`{{${ att }=${ power[att] || weapon[att] }}}`, weapon);
                     }
                     else {
                         macro += `{{${ att }=${ power[att] || weapon[att] }}}`;
