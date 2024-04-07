@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         4e4roll20
+// @name         PowerBox4e
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers from them.
@@ -276,17 +276,19 @@
                         chargePower.Flavor = `You throw yourself into the fight, dashing forward and launching an attack. ${ chargePower.Flavor }`;
                         chargePower.Charge = `Move your speed as part of the charge and make an attack at the end of your move. You gain a +1 bonus to the attack roll.`
                         chargePower.Weapons = [];
+                        chargePower.WeaponMap = {};
                         for (let wpn of tempPower.Weapons) {
                             let tmp = Object.assign({}, wpn);
                             tmp['Attack Bonus'] = tmp['Attack Bonus'] ? parseInt(tmp['Attack Bonus'])+1 : 1;
                             chargePower.Weapons.push(tmp);
+                            chargePower.WeaponMap[tmp.Weapon] = tmp;
                         }
                         powersConstruct.push(chargePower);
                         window.powerObject[chargePower.Name] = chargePower;
                     }
                 }
 
-                let magicItems = doc.querySelectorAll('LootTally > loot >RulesElement[type="Magic Item"]');
+                let magicItems = doc.querySelectorAll('LootTally > loot > RulesElement[type="Magic Item"]');
                 if (magicItems?.length){
                     for (let item of magicItems){
                         let flavor = item.querySelector('Flavor');
