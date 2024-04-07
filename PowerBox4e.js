@@ -78,7 +78,7 @@
         // Improved dice process with or handler and multiple dice matching.
         function processDiceFormula(macroString, wDice){
             let statMods = window.foundCharacter.statMods;
-            let reconstructedString = macroString.replaceAll('[W]', wDice || '[W]');
+            let reconstructedString = macroString.replaceAll('[W]', `[[${ wDice }]]` || '[W]');
             if (statMods){
                 let stats = ['Charisma', 'Constitution', 'Dexterity', 'Strength', 'Wisdom', 'Intelligence'];
                 for (let stat of stats){
@@ -93,8 +93,6 @@
                     reconstructedString = reconstructedString.replaceAll(stat, statMods[stat]);
                 }
             }
-            reconstructedString.replaceAll(' + ', '+');
-            reconstructedString.replaceAll(' + ', '+');
             // Dice algorithm found here: https://stackoverflow.com/questions/52252114/dd-style-compound-dice-expression-regex
             let diceFound = reconstructedString.match(/[0-9][0-9]*d[0-9][0-9]*/g);
             if (diceFound?.length){
