@@ -78,18 +78,10 @@
         // Improved dice process with 'or' handler and multiple dice matching.
         function processDiceFormula(macroString, weapon){
             // Construct the weapon dice from the first part of the damage formula (if applicable).
-            let wDice = '';
-            let diceNoSpaces = weapon?.Damage?.replaceAll(' ', '');
-            if (diceNoSpaces?.length > 2){
-                if (diceNoSpaces?.length > 3 && diceNoSpaces[3] !== '+'){
-                    wDice = `x${ diceNoSpaces.slice(0, 4) } (Roll: [[${ diceNoSpaces.slice(0, 4) }]])`;
-                }
-                else{
-                    wDice = `x${ diceNoSpaces.slice(0, 3) } (Roll: [[${ diceNoSpaces.slice(0, 3) }]])`;
-                }
-            }
-            let statMods = window.foundCharacter.statMods;
-            let reconstructedString = macroString.replaceAll('[W]', wDice || '[W]');
+            let wDice = window?.foundCharacter?.weaponDiceMap?.[weapon?.Weapon];
+            let statMods = window?.foundCharacter?.statMods;
+            let reconstructedString = macroString;
+
             if (statMods){
                 let stats = ['Charisma', 'Constitution', 'Dexterity', 'Strength', 'Wisdom', 'Intelligence'];
                 for (let stat of stats){
@@ -104,14 +96,13 @@
                     reconstructedString = reconstructedString.replaceAll(stat, statMods[stat]);
                 }
             }
-            // Dice algorithm found here: https://stackoverflow.com/questions/52252114/dd-style-compound-dice-expression-regex
             let diceFound = reconstructedString.match(/[0-9][0-9]*d[0-9][0-9]*/g);
             if (diceFound?.length){
                 let matchedSet = [];
                 for (let x = 0; x < diceFound.length; x++){
                     let add = true;
                     for (let y = 0; y < diceFound.length; y++){
-                        if (x !== y && !(diceFound[x] !== diceFound[y]) && diceFound[y].includes(diceFound[x])){
+                        if (x !== y && diceFound[y] !== diceFound[x] && diceFound[y].includes(diceFound[x])){
                             add = false;
                         }
                     }
@@ -123,13 +114,17 @@
                     reconstructedString = reconstructedString.replaceAll(match, `[[${ match }]]`);
                 }
             }
+            // Replace weapon dice with expressions.
+            for (let x = 1; x < 10; x++){
+                reconstructedString = reconstructedString.replaceAll(`${x}[W]`, `${x}${wDice} (Roll: [[${x}${wDice}]])`);
+            }
             return reconstructedString;
         }
 
         function constructMacro(power, weapon, targets){
             let macro = `&{template:default} {{name=${power.Name}}}`;
-            let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Crit Description','Conditions'];
-            let processForDice = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Crit Description','Conditions'];
+            let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions','Crit Components'];
+            let processForDice = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions','Crit Components'];
             for (let att of attributes){
                 if (power?.[att]?.replaceAll(' ', '') || weapon?.[att]?.replaceAll(' ', '')){
                     if (processForDice.includes(att)){
@@ -227,7 +222,7 @@
                 for (let stat of stats){
                     statMods[`${ stat } modifier`] = doc.querySelectorAll(`[name="${ stat } modifier"]`)[0].parentElement.getAttribute('value');
                 }
-                window.statMods = statMods;
+                let weaponDiceMap = {};
 
                 // Construct the power set
                 let powers = doc.getElementsByTagName('Power');
@@ -260,17 +255,26 @@
                         tempWeapon.Weapon = weapons[y].getAttribute('name');
                         tempWeapon['Attack Bonus'] = weapons[y].getElementsByTagName('AttackBonus')[0].innerHTML;
                         tempWeapon.Damage = weapons[y].getElementsByTagName('Damage')[0].innerHTML;
+                        let diceNoSpaces = tempWeapon?.Damage?.replaceAll(' ', '');
+                        if (diceNoSpaces?.length > 2){
+                            if (diceNoSpaces?.length > 3 && diceNoSpaces[3] !== '+'){
+                                weaponDiceMap[tempWeapon.Weapon] = `${ diceNoSpaces.slice(1, 4) }`;
+                            }
+                            else{
+                                weaponDiceMap[tempWeapon.Weapon] = `${ diceNoSpaces.slice(1, 3) }`;
+                            }
+                        }
                         if (weapons[y].getElementsByTagName('CritDamage')?.length){
                             tempWeapon['Crit Damage'] = weapons[y].getElementsByTagName('CritDamage')[0].innerHTML;
                         }
                         else {
-                            tempWeapon['Crit Damage'] = weapons[y].getElementsByTagName('Damage')[0].innerHTML.replace('d','*');
+                            tempWeapon['Crit Damage'] = `[[${ weapons[y].getElementsByTagName('Damage')[0].innerHTML.replace('d','*') }]]`;
                         }
                         if (weapons[y].getElementsByTagName('Conditions')?.length){
                             tempWeapon.Conditions = weapons[y].getElementsByTagName('Conditions')[0].innerHTML;
                         }
-                        if (weapons[y].getElementsByTagName('CritComponent')?.length){
-                            tempWeapon['Crit Description'] = weapons[y].getElementsByTagName('CritComponent')[0].innerHTML;
+                        if (weapons[y].getElementsByTagName('CritComponents')?.length){
+                            tempWeapon['Crit Components'] = weapons[y].getElementsByTagName('CritComponents')[0].innerHTML;
                         }
                         tempPower.Weapons.push(tempWeapon);
                         tempPower.WeaponMap[tempWeapon.Weapon] = tempWeapon;
@@ -333,7 +337,8 @@
                     storedMoney,
                     experience,
                     level,
-                    statMods
+                    statMods,
+                    weaponDiceMap
                 };
                 window.foundCharacter = characterObj;
                 buildCharacter(characterObj);
