@@ -59,7 +59,7 @@
             let macro = window.constructMacro(window.powerObject[powerQuery[0]], powerQuery.length > 1 ? window.powerObject[powerQuery[0]]['WeaponMap'][powerQuery[1]] : {}, targets);
             document.querySelectorAll('[title="Text Chat Input"]')[0].value = macro;
             document.getElementById('chatSendBtn').click();
-            if (window.autoCheck && window.frames?.length > 1){
+            if (window?.powerBoxSettings?.autoCheck && window.frames?.length > 1){
                 for (let y = 1; y < window.frames?.length; y++){
                     let w = window.frames[y];
                     for (let x = 1; x < 100; x++){
@@ -123,8 +123,8 @@
 
         function constructMacro(power, weapon, targets){
             let macro = `&{template:default} {{name=${power.Name}}}`;
-            let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions','Crit Components'];
-            let processForDice = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions','Crit Components'];
+            let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions'];
+            let processForDice = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions'];
             for (let att of attributes){
                 if (power?.[att]?.replaceAll(' ', '') || weapon?.[att]?.replaceAll(' ', '')){
                     if (processForDice.includes(att)){
@@ -141,8 +141,25 @@
                     macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }]]}}`;
                 }
             }
-            macro += power?.Damage?.replaceAll(' ', '') || weapon?.Damage?.replaceAll(' ', '') ? `{{damage=[[${ power['Damage'] || weapon['Damage'] }]]}}` : '';
-            macro += power?.['Crit Damage']?.replaceAll(' ', '') || weapon?.['Crit Damage']?.replaceAll(' ', '') ? `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }]]}}` : '';
+            if (power?.Damage?.replaceAll(' ', '') || weapon?.Damage?.replaceAll(' ', '')){
+                macro += `{{damage=[[${ power['Damage'] || weapon['Damage'] }]]}}`;
+                if (window?.powerBoxSettings?.multiDamage){
+                    for (let x = 1; x < targets; x++){
+                        macro += `{{damage ${ x+1 }=[[${ power['Damage'] || weapon['Damage'] }]]}}`;
+                    }
+                }
+            }
+            if (power?.['Crit Damage']?.replaceAll(' ', '') || weapon?.['Crit Damage']?.replaceAll(' ', '')){
+                macro += `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }]]}}`;
+                if (window?.powerBoxSettings?.multiDamage){
+                    for (let x = 1; x < targets; x++){
+                        macro += `{{Crit Damage ${ x+1 }=[[${ power['Crit Damage'] || weapon['Crit Damage'] }]]}}`;
+                    }
+                }
+            }
+            if (power?.['Crit Components']?.replaceAll(' ', '') || weapon?.['Crit Components']?.replaceAll(' ', '')){
+                macro += `{{Crit Components=${ power['Crit Components'] || weapon['Crit Components'] }}}`;
+            }
             return macro;
         }
 
@@ -172,16 +189,32 @@
 
         function buildCharacter(characterObj){
             window.foundCharacter = characterObj;
-            window.autoCheck = localStorage.getItem('powerBoxAutoCheck');
-            document.getElementById('charBox').innerHTML = `
+            window.powerBoxSettings = JSON.parse(localStorage.getItem('powerBoxSettings')) || { autoCheck: false, multiDamage: false };
+            let cBox = document.getElementById('charBox');
+            cBox.innerHTML = `
                 <input id="charName" style="margin: 5px 5px 5px 5px; width: 74%" disabled value="Character: ${characterObj.name}" type="text">
-                <input id="charLevel" style="margin: 5px 5px 5px 5px; width: 22%" disabled value="Level: ${characterObj.level}" type="text">
-                <input type="checkbox" id="autoCheck" title="Automatically check off powers."/>
-            `;
-            document.getElementById("autoCheck").checked = window.autoCheck ? true : false;
-            document.getElementById("autoCheck").addEventListener("click",function() {
-                window.autoCheck = !window.autoCheck;
-                localStorage.setItem('powerBoxAutoCheck', window.autoCheck);
+                <input id="charLevel" style="margin: 5px 5px 5px 5px; width: 26%" disabled value="Level: ${characterObj.level}" type="text">`;
+            if (!document.getElementById('settingsRow1')){
+                cBox.outerHTML += `
+                    <div id="settingsRow1" style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <input type="checkbox" id="autoCheck" title="Check off powers when used (requires character sheet to be open).">
+                        <input id="autoCheckLabel" style="margin: 5px 5px 5px 5px; width: 45%" disabled value="Auto Check Powers" type="text">
+                        <input type="checkbox" id="multiDamage" title="Roll damage for each target of the chosen power.">
+                        <input id="multiDamageLabel" style="margin: 5px 5px 5px 5px; width: 45%" disabled value="Roll Damage Per Target" type="text">
+                    </div>
+                `;
+            }
+            let autoCheckBox = document.getElementById("autoCheck");
+            autoCheckBox.checked = window?.powerBoxSettings?.autoCheck ? true : false;
+            autoCheckBox.addEventListener("click",function() {
+                window.powerBoxSettings.autoCheck = !window.powerBoxSettings.autoCheck;
+                localStorage.setItem('powerBoxSettings', JSON.stringify(window.powerBoxSettings));
+            });
+            let multiDamageBox = document.getElementById("multiDamage");
+            multiDamageBox.checked = window?.powerBoxSettings?.multiDamage ? true : false;
+            multiDamageBox.addEventListener("click",function() {
+                window.powerBoxSettings.multiDamage = !window.powerBoxSettings.multiDamage;
+                localStorage.setItem('powerBoxSettings', JSON.stringify(window.powerBoxSettings));
             });
         }
 
@@ -192,7 +225,6 @@
 
         // Check localStorage for an existing character
         let foundCharacter = localStorage.getItem('powerBox');
-
         if (foundCharacter){
             foundCharacter = JSON.parse(foundCharacter);
             buildCharacter(foundCharacter);
