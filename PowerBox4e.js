@@ -14,10 +14,31 @@
     function onDOMLoad(){
         let uiContainer = document.createElement('div');
         uiContainer.innerHTML = `
+        <div id="powerBoxUI" class="hideUI">
         <div id="charBox" style="display: flex; flex-direction: row; justify-content: space-between;">
             <input id="charName" style="margin: 5px 5px 5px 5px; width: 100%" disabled value="No character found" type="text">
         </div>
-        <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;" id="powerActions">
+        <div class="hideUI" style="padding: 5px; display: flex; flex-direction: column; width: 97%; justify-content: space-between; row-gap: 5px;border:  1px solid;" id="situationalModifiers">
+            <div style="display: flex;flex-direction: row;min-width: 100%;justify-content: space-between;">
+                Situational Bonuses:
+            </div>
+            <div style="display: flex;flex-direction: row;min-width: 100%;justify-content: space-between;">
+                <input style="width: 50%;" type="text" placeholder="Attack Bonus" id="attackInput" title="Situational Attack Bonus">
+                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Damage Bonus" id="damageInput" title="Situational Damage Bonus">
+            </div>
+            <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
+                <input style="width: 50%;" type="text" placeholder="Skill Bonus" id="skillInput" title="Situational Skill Bonus">
+                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Saving Throw Bonus" id="savingInput" title="Situational Saving Throw Bonus">
+            </div>
+            <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
+                <input style="width: 25%;" type="text" placeholder="AC Bonus" id="acInput" title="Situational Armor Class Bonus">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Fort Bonus" id="fortInput" title="Situational Fortitude Bonus">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Ref Bonus" id="refInput" title="Situational Reflex Bonus">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Will Bonus" id="willInput" title="Situational Will Bonus">
+            </div>
+        </div>
+        </div>
+        <div class="hideUI" style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;" id="powerActions">
         </div>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <input style="margin: 5px 5px 5px 5px; width: 100%;" type="file" id="uploadedFile" />
@@ -35,6 +56,23 @@
             </span>
         </div>`;
         document.getElementById('textchat-input').appendChild(uiContainer);
+
+        // Get the chat button and append the new "hide ui" button
+        let cb = document.getElementById('chatSendBtn');
+        if (cb){
+            cb.outerHTML += '<style>.hideUI{ display: none !important; }</style><button class="btn" id="pbuiBtn" style="margin-left:  10px;">Power Box <b id="expandoIcon" style="font-size: 0.9em;">◃</b></button>';
+            document.getElementById("pbuiBtn").addEventListener("click",function() {
+                let box = document.getElementById('powerBoxUI');
+                let icon = document.getElementById('expandoIcon');
+                icon.innerHTML = icon.innerHTML === '◃' ? '▿' : '◃';
+                icon.style = icon.innerHTML === '◃' ? 'font-size: 0.9em;' : 'font-size: 1.3em;';
+                document.getElementById('powerBoxUI').classList.toggle('hideUI');
+                window.dispatchEvent(new Event('resize'));
+            });
+        }
+        else {
+            console.log('Error: could not locate chat button to append content.');
+        }
 
         let actionBox = document.getElementById('powerActions');
 
@@ -124,7 +162,7 @@
         function constructMacro(power, weapon, targets){
             let macro = `&{template:default} {{name=${power.Name}}}`;
             let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions'];
-            let processForDice = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions'];
+            let processForDice = ['Power','Charge','Channel Divinity','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Requirement','Special','Weapon','Conditions'];
             for (let att of attributes){
                 if (power?.[att]?.replaceAll(' ', '') || weapon?.[att]?.replaceAll(' ', '')){
                     if (processForDice.includes(att)){
@@ -136,24 +174,27 @@
                 }
             }
             if (power['Attack Bonus'] || weapon['Attack Bonus']){
-                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }]]}}`;
+                let sitBonus = document.getElementById('attackInput')?.value;
+                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus && parseInt(sitBonus) ? `+${sitBonus}` : '' }]]}}`;
                 for (let x = 1; x < targets; x++){
-                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }]]}}`;
+                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus && parseInt(sitBonus) ? `+${sitBonus}` : '' }]]}}`;
                 }
             }
             if (power?.Damage?.replaceAll(' ', '') || weapon?.Damage?.replaceAll(' ', '')){
-                macro += `{{damage=[[${ power['Damage'] || weapon['Damage'] }]]}}`;
+                let sitBonus = document.getElementById('damageInput')?.value;
+                macro += `{{damage=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
                 if (window?.powerBoxSettings?.multiDamage){
                     for (let x = 1; x < targets; x++){
-                        macro += `{{damage ${ x+1 }=[[${ power['Damage'] || weapon['Damage'] }]]}}`;
+                        macro += `{{damage ${ x+1 }=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
                     }
                 }
             }
             if (power?.['Crit Damage']?.replaceAll(' ', '') || weapon?.['Crit Damage']?.replaceAll(' ', '')){
-                macro += `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }]]}}`;
+                let sitBonus = document.getElementById('damageInput')?.value;
+                macro += `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `+${sitBonus.replaceAll('d', '*')}` : '' }]]}}`;
                 if (window?.powerBoxSettings?.multiDamage){
                     for (let x = 1; x < targets; x++){
-                        macro += `{{Crit Damage ${ x+1 }=[[${ power['Crit Damage'] || weapon['Crit Damage'] }]]}}`;
+                        macro += `{{Crit Damage ${ x+1 }=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `+${sitBonus.replaceAll('d', '*')}` : '' }]]}}`;
                     }
                 }
             }
@@ -216,6 +257,9 @@
                 window.powerBoxSettings.multiDamage = !window.powerBoxSettings.multiDamage;
                 localStorage.setItem('powerBoxSettings', JSON.stringify(window.powerBoxSettings));
             });
+            document.getElementById('powerActions').classList.remove('hideUI');
+            document.getElementById('situationalModifiers').classList.remove('hideUI');
+            window.dispatchEvent(new Event('resize'));
         }
 
         function parseForDice(detail){
@@ -300,7 +344,7 @@
                             tempWeapon['Crit Damage'] = weapons[y].getElementsByTagName('CritDamage')[0].innerHTML;
                         }
                         else {
-                            tempWeapon['Crit Damage'] = `[[${ weapons[y].getElementsByTagName('Damage')[0].innerHTML.replace('d','*') }]]`;
+                            tempWeapon['Crit Damage'] = `${ weapons[y].getElementsByTagName('Damage')[0].innerHTML.replace('d','*') }`;
                         }
                         if (weapons[y].getElementsByTagName('Conditions')?.length){
                             tempWeapon.Conditions = weapons[y].getElementsByTagName('Conditions')[0].innerHTML;
