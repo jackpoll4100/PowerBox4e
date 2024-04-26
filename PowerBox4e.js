@@ -2,7 +2,7 @@
 // @name         PowerBox4e
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers/skills from them.
+// @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers from them.
 // @author       jackson pollard
 // @match        https://app.roll20.net/editor/
 // @icon         https://cdn-icons-png.flaticon.com/512/6729/6729800.png
@@ -16,9 +16,9 @@
         uiContainer.innerHTML = `
         <div id="powerBoxUI" class="hideUI">
         <div id="charBox" style="display: flex; flex-direction: row; justify-content: space-between;">
-            <input id="charName" style="margin: 5px 5px 5px 5px; width: 100%" disabled value="No character found" type="text">
+            <input id="charName" style="margin: 5px; width: 100%" disabled value="No character found" type="text">
         </div>
-        <div class="hideUI" style="padding: 5px; display: flex; flex-direction: column; width: 97%; justify-content: space-between; row-gap: 5px;border:  1px solid;" id="situationalModifiers">
+        <div class="hideUI" style="padding: 5px; display: flex; flex-direction: column; border-radius: 5px; justify-content: space-between; row-gap: 5px;border:  1px solid;" id="situationalModifiers">
             <div style="display: flex;flex-direction: row;min-width: 100%;justify-content: space-between;">
                 Situational Bonuses:
             </div>
@@ -38,20 +38,22 @@
             </div>
         </div>
         </div>
+        <div class="hideUI" style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;" id="skillActions">
+        </div>
         <div class="hideUI" style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;" id="powerActions">
         </div>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
-            <input style="margin: 5px 5px 5px 5px; width: 100%;" type="file" id="uploadedFile" />
-            <span id="usePower" style="
+            <input style="margin: 5px; width: 100%;" type="file" id="uploadedFile" />
+            <span id="usePower" class="btn" style="
                 padding: 5px;
-                margin: 5px 5px 5px 5px;
+                margin: 5px;
                 min-width: 70px;
                 border-radius: 5px;
-                background-color: var(--primary-dark);
                 display: inline-grid;
                 align-items: center;
                 text-align: center;
-                cursor: pointer;">
+                cursor: pointer;"
+                class="hideUI">
                     Use Power
             </span>
         </div>`;
@@ -60,7 +62,7 @@
         // Get the chat button and append the new "hide ui" button
         let cb = document.getElementById('chatSendBtn');
         if (cb){
-            cb.outerHTML += '<style>.hideUI{ display: none !important; }</style><button class="btn" id="pbuiBtn" style="margin-left:  10px;">Power Box <b id="expandoIcon" style="font-size: 0.9em;">◃</b></button>';
+            cb.outerHTML += '<style>.hideUI{ display: none !important; } .pb-button{ padding-left: 4px !important; padding-right: 1px !important; }</style><button class="btn pb-button" id="pbuiBtn" style="margin-left:  10px;">Power Box <b id="expandoIcon" style="font-size: 0.9em;">◃</b></button>';
             document.getElementById("pbuiBtn").addEventListener("click",function() {
                 let box = document.getElementById('powerBoxUI');
                 let icon = document.getElementById('expandoIcon');
@@ -71,14 +73,15 @@
             });
         }
         else {
-            console.log('Error: could not locate chat button to append content.');
+            console.log('PowerBox - Error: could not locate chat button to append content.');
         }
 
         let actionBox = document.getElementById('powerActions');
+        let skillBox = document.getElementById('skillActions');
 
-        let elStyles = 'margin: 5px 5px 5px 5px;';
+        let elStyles = 'margin: 5px;';
 
-        //Create and append ui elements
+        //Create and append power ui elements
         let selectList = document.createElement("select");
         selectList.id = 'powerDropdown';
         selectList.style = elStyles + ' width: 75%';
@@ -95,8 +98,7 @@
             powerQuery = powerQuery.split('||');
             let targets = parseInt(document.getElementById('myTargets').value || 1);
             let macro = window.constructMacro(window.powerObject[powerQuery[0]], powerQuery.length > 1 ? window.powerObject[powerQuery[0]]['WeaponMap'][powerQuery[1]] : {}, targets);
-            document.querySelectorAll('[title="Text Chat Input"]')[0].value = macro;
-            document.getElementById('chatSendBtn').click();
+            window.execMacro(macro);
             if (window?.powerBoxSettings?.autoCheck && window.frames?.length > 1){
                 for (let y = 1; y < window.frames?.length; y++){
                     let w = window.frames[y];
@@ -110,6 +112,25 @@
                 }
             }
         });
+
+        //Create and append skill ui elements
+        let selectSkillList = document.createElement("select");
+        selectSkillList.id = 'skillDropdown';
+        selectSkillList.style = elStyles + ' width: 45%';
+        skillBox.appendChild(selectSkillList);
+        let buttonCss = `
+                padding: 5px;
+                margin: 5px;
+                min-width: 70px;
+                border-radius: 5px;
+                display: inline-grid;
+                align-items: center;
+                text-align: center;
+                cursor: pointer;`;
+        skillBox.innerHTML += `<span class="btn" style="${ buttonCss } width: 25%;" id="skillCheckButton">Skill Check</span>
+                               <span class="btn" style="${ buttonCss } width: 30%;" id="savingThrowButton">Saving Throw</span>`;
+        document.getElementById("skillCheckButton").addEventListener("click",()=>{ window.constructSkillCheck(); });
+        document.getElementById("savingThrowButton").addEventListener("click",()=>{ window.constructSavingThrow(); });
 
         const fileInputElement = document.getElementById('uploadedFile');
 
@@ -154,9 +175,41 @@
             }
             // Replace weapon dice with expressions.
             for (let x = 1; x < 10; x++){
-                reconstructedString = reconstructedString.replaceAll(`${x}[W]`, `${x}${wDice} (Roll: [[${x}${wDice}]])`);
+                reconstructedString = reconstructedString.replaceAll(`${ x }[W]`, `${ x }${ wDice } (Roll: [[${ x }${ wDice }]])`);
             }
             return reconstructedString;
+        }
+
+        function execMacro(macro){
+            console.log('PowerBox - Executing Macro: ', macro);
+            document.querySelectorAll('[title="Text Chat Input"]')[0].value = macro;
+            document.getElementById('chatSendBtn').click();
+        }
+
+        function constructSkillCheck(){
+            let skill = document.getElementById('skillDropdown')?.value;
+            let sitBonus = document.getElementById('skillInput')?.value;
+            let macro = `&{template:default} {{name=${ skill } Check}} {{result=[[1d20+${ window.foundCharacter.skillMods[skill] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+            window.execMacro(macro);
+        }
+
+        function buildSkillDropdown(){
+            let sd = document.getElementById('skillDropdown');
+            sd.innerHTML = '';
+            let skills = ['Acrobatics','Arcana','Athletics','Bluff','Diplomacy','Dungeoneering','Endurance','Heal','History','Insight','Intimidate','Nature','Perception','Religion','Stealth','Streetwise','Thievery'];
+
+            for (let skill of skills) {
+                let option = document.createElement("option");
+                option.text = skill;
+                option.value = skill;
+                sd.appendChild(option);
+            }
+        }
+
+        function constructSavingThrow(){
+            let sitBonus = document.getElementById('savingInput')?.value;
+            let macro = `&{template:default} {{name=Saving Throw}} {{result=[[1d20${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+            window.execMacro(macro);
         }
 
         function constructMacro(power, weapon, targets){
@@ -175,9 +228,9 @@
             }
             if (power['Attack Bonus'] || weapon['Attack Bonus']){
                 let sitBonus = document.getElementById('attackInput')?.value;
-                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus && parseInt(sitBonus) ? `+${sitBonus}` : '' }]]}}`;
+                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
                 for (let x = 1; x < targets; x++){
-                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus && parseInt(sitBonus) ? `+${sitBonus}` : '' }]]}}`;
+                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
                 }
             }
             if (power?.Damage?.replaceAll(' ', '') || weapon?.Damage?.replaceAll(' ', '')){
@@ -204,8 +257,17 @@
             return macro;
         }
 
-        // Add macro constructor to the window context
+        // Add macro constructor to the window context.
         window.constructMacro = constructMacro;
+
+        // Add skill check constructor to the window context.
+        window.constructSkillCheck = constructSkillCheck;
+
+        // Add saving throw constructor to the window context.
+        window.constructSavingThrow = constructSavingThrow;
+
+        // Add macro exec to the window context.
+        window.execMacro = execMacro;
 
         function buildPowerDropdown(powersConstruct){
             let pd = document.getElementById('powerDropdown');
@@ -237,11 +299,14 @@
                 <input id="charLevel" style="margin: 5px 5px 5px 5px; width: 26%" disabled value="Level: ${characterObj.level}" type="text">`;
             if (!document.getElementById('settingsRow1')){
                 cBox.outerHTML += `
+                    <div style="margin-bottom: 5px; padding: 5px; display: flex; flex-direction: column; border-radius: 5px; justify-content: space-between; border:  1px solid; row-gap: 5px;" id="settingsWrapper">
+                    <div>Settings:</div>
                     <div id="settingsRow1" style="display: flex; flex-direction: row; justify-content: space-between;">
                         <input type="checkbox" id="autoCheck" title="Check off powers when used (requires character sheet to be open).">
-                        <input id="autoCheckLabel" style="margin: 5px 5px 5px 5px; width: 45%" disabled value="Auto Check Powers" type="text">
+                        <input id="autoCheckLabel" style="margin: 5px 5px 5px 5px; width: 45%" disabled value="Auto Check Powers" type="text" title="Check off powers when used (requires character sheet to be open).">
                         <input type="checkbox" id="multiDamage" title="Roll damage for each target of the chosen power.">
-                        <input id="multiDamageLabel" style="margin: 5px 5px 5px 5px; width: 45%" disabled value="Roll Damage Per Target" type="text">
+                        <input id="multiDamageLabel" style="margin: 5px 5px 5px 5px; width: 45%; font-size: 0.9em;" title="Roll damage for each target of the chosen power." disabled value="Roll Damage Per Target" type="text">
+                    </div>
                     </div>
                 `;
             }
@@ -258,13 +323,11 @@
                 localStorage.setItem('powerBoxSettings', JSON.stringify(window.powerBoxSettings));
             });
             document.getElementById('powerActions').classList.remove('hideUI');
+            document.getElementById('usePower').classList.remove('hideUI');
+            document.getElementById('skillActions').classList.remove('hideUI');
             document.getElementById('situationalModifiers').classList.remove('hideUI');
+            buildSkillDropdown();
             window.dispatchEvent(new Event('resize'));
-        }
-
-        function parseForDice(detail){
-            let reconstructedDetail = detail;
-            return reconstructedDetail
         }
 
         // Check localStorage for an existing character
@@ -298,6 +361,14 @@
                 for (let stat of stats){
                     statMods[`${ stat } modifier`] = doc.querySelectorAll(`[name="${ stat } modifier"]`)[0].parentElement.getAttribute('value');
                 }
+
+                // Construct skill mod array
+                let skillMods = {};
+                let skills = ['Acrobatics','Arcana','Athletics','Bluff','Diplomacy','Dungeoneering','Endurance','Heal','History','Insight','Intimidate','Nature','Perception','Religion','Stealth','Streetwise','Thievery'];
+                for (let skill of skills){
+                    skillMods[`${ skill }`] = doc.querySelectorAll(`alias[name="${ skill }"]`)[0].parentElement.getAttribute('value');
+                }
+
                 let weaponDiceMap = {};
 
                 // Construct the power set
@@ -305,7 +376,7 @@
                 let powersConstruct = [];
                 window.powerObject = {};
                 for (let x = 0; x < powers.length; x++){
-                    console.log(powers[x].getAttribute('name'));
+                    console.log('PowerBox - Importing Power: ', powers[x].getAttribute('name'));
                     let tempPower = {
                         Name: powers[x].getAttribute('name')
                     };
@@ -394,7 +465,7 @@
                     }
                 }
 
-                console.log(powersConstruct.length);
+                console.log('PowerBox - Imported ' + powersConstruct.length + ' powers.');
 
                 //Create and append the options
                 powersConstruct = powersConstruct.sort((p1, p2)=>{
@@ -414,6 +485,7 @@
                     experience,
                     level,
                     statMods,
+                    skillMods,
                     weaponDiceMap
                 };
                 window.foundCharacter = characterObj;
