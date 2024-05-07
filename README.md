@@ -24,6 +24,7 @@ To do this, just extract the contents of the zip file and run the exe, then sele
 This should give you a new version of your character sheet named something like ```<You character name>Detail.dnd4e```.
 
 Next, from Roll20, load into you game and hit the "choose file" button at the bottom of the page, it should look like this:
+
 ![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/aa8f8c46-9a52-41ca-b40a-579f07c49a35)
 
 This will allow you to select your character sheet and upload it.
