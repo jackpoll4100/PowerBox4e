@@ -60,7 +60,7 @@ There are several convenience features you can use while rolling powers as well:
 
 ![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/1b12798a-542c-4dca-88fe-dff45ec98bfa)
 
-2) You can add situational bonuses in the "Situational Bonuses" menu, this is also hidden behind the toggle (bonuses still apply after closing the menu, and will persist until you reset/remove them). For powers the relevant Bonuses are "Attack Bonus" and "Damage Bonus". These work with numbers or dice formulas:
+2) You can add situational bonuses in the "Situational Bonuses" menu, this is also hidden behind the toggle (bonuses still apply after closing the menu, and will persist until you reset/remove them). For powers the relevant bonuses are "Attack Bonus" and "Damage Bonus". These work with numbers or dice formulas:
 
 ![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/62389094-9153-4b50-9d75-f41d5a7d5647)
 
@@ -94,7 +94,7 @@ Situational Bonuses do not do this currnetly, they are tracked only so long as t
 
 ## Caveats/Known Issues:
 
--In the default Roll20 macro template, power cards take up quite a lot of space, partially because 4e powers have a lot in them and partially due to the layout of the power cards. I'm looking into making a custom roll template that saves space but if I did it would require pro access to add it to you game.
+-In the default Roll20 macro template, power cards take up quite a lot of space, partially because 4e powers have a lot in them and partially due to the layout of the power cards. I'm looking into making a custom roll template that saves space but if so it would require pro access to add it to your game.
 
 -There is not currently a "delete character" button. You can always just upload a new sheet and it will overwrite whatever is there, but if you want to delete your character info completely for some reason, you have to do it from the inspector by deleting the key named "powerBox" from the Roll20 LocalStorage under the Application tab. I don't recommend messing with this stuff unless you know what you're doing already, its more hassle than its worth but I will be adding a delete character button soon to handle this automatically.
 
