@@ -18,7 +18,7 @@ Once you add the userscript to the extension of your choice, the first step in u
 
 First, find the ```.dnd4e``` character sheet file created by the character builder. It should be in a directory like this: ```Documents\ddi\Saved Characters```.
 
-You then need to run it through a program called [DetailAdder]([https://github.com/CBLoader/DetailAdder](https://github.com/CBLoader/DetailAdder/releases/tag/v2.0)).
+You then need to run it through a program called [DetailAdder](https://github.com/CBLoader/DetailAdder/releases/tag/v2.0).
 This formats it properly so that the extension can get the right details about powers etc.
 To do this, just extract the contents of the zip file and run the exe, then select your character sheet.
 This should give you a new version of your character sheet named something like ```<You character name>Detail.dnd4e```.
