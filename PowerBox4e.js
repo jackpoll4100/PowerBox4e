@@ -20,21 +20,21 @@
         </div>
         <div class="hideUI" style="padding: 5px; display: flex; flex-direction: column; border-radius: 5px; justify-content: space-between; row-gap: 5px;border:  1px solid;" id="situationalModifiers">
             <div style="display: flex;flex-direction: row;min-width: 100%;justify-content: space-between;">
-                Situational Bonuses:
+                Situational Modifiers:
             </div>
             <div style="display: flex;flex-direction: row;min-width: 100%;justify-content: space-between;">
-                <input style="width: 50%;" type="text" placeholder="Attack Bonus" id="attackInput" title="Situational Attack Bonus">
-                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Damage Bonus" id="damageInput" title="Situational Damage Bonus">
+                <input style="width: 50%;" type="text" placeholder="Attack Modifier" id="attackInput" title="Situational Attack Modifier">
+                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Damage Modifier" id="damageInput" title="Situational Damage Modifier">
             </div>
             <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
-                <input style="width: 50%;" type="text" placeholder="Skill Bonus" id="skillInput" title="Situational Skill Bonus">
-                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Saving Throw Bonus" id="savingInput" title="Situational Saving Throw Bonus">
+                <input style="width: 50%;" type="text" placeholder="Skill Modifier" id="skillInput" title="Situational Skill Modifier">
+                <input style="width: 50%;margin-left:  10px;" type="text" placeholder="Saving Throw Modifier" id="savingInput" title="Situational Saving Throw Modifier">
             </div>
             <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
-                <input style="width: 25%;" type="text" placeholder="AC Bonus" id="acInput" title="Situational Armor Class Bonus">
-                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Fort Bonus" id="fortInput" title="Situational Fortitude Bonus">
-                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Ref Bonus" id="refInput" title="Situational Reflex Bonus">
-                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Will Bonus" id="willInput" title="Situational Will Bonus">
+                <input style="width: 25%;" type="text" placeholder="AC Mod" id="acInput" title="Situational Armor Class Modifier">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Fort Mod" id="fortInput" title="Situational Fortitude Modifier">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Ref Mod" id="refInput" title="Situational Reflex Modifier">
+                <input style="width: 25%;margin-left:  10px;" type="text" placeholder="Will Mod" id="willInput" title="Situational Will Modifier">
             </div>
         </div>
         </div>
