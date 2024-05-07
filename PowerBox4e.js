@@ -189,7 +189,11 @@
         function constructSkillCheck(){
             let skill = document.getElementById('skillDropdown')?.value;
             let sitBonus = document.getElementById('skillInput')?.value;
-            let macro = `&{template:default} {{name=${ skill } Check}} {{result=[[1d20+${ window.foundCharacter.skillMods[skill] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+            let joiningChar = '+';
+            if (sitBonus?.length && ['+','-'].includes(sitBonus[0])){
+                joiningChar = '';
+            }
+            let macro = `&{template:default} {{name=${ skill } Check}} {{result=[[1d20+${ window.foundCharacter.skillMods[skill] }${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
             window.execMacro(macro);
         }
 
@@ -208,7 +212,11 @@
 
         function constructSavingThrow(){
             let sitBonus = document.getElementById('savingInput')?.value;
-            let macro = `&{template:default} {{name=Saving Throw}} {{result=[[1d20${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+            let joiningChar = '+';
+            if (sitBonus?.length && ['+','-'].includes(sitBonus[0])){
+                joiningChar = '';
+            }
+            let macro = `&{template:default} {{name=Saving Throw}} {{result=[[1d20${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
             window.execMacro(macro);
         }
 
@@ -228,26 +236,38 @@
             }
             if (power['Attack Bonus'] || weapon['Attack Bonus']){
                 let sitBonus = document.getElementById('attackInput')?.value;
-                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+                let joiningChar = '+';
+                if (sitBonus?.length && ['+','-'].includes(sitBonus[0])){
+                    joiningChar = '';
+                }
+                macro += `{{attack=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
                 for (let x = 1; x < targets; x++){
-                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+                    macro += `{{attack ${ x+1 }=[[1d20+${ power['Attack Bonus'] || weapon['Attack Bonus'] || 0 }${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
                 }
             }
             if (power?.Damage?.replaceAll(' ', '') || weapon?.Damage?.replaceAll(' ', '')){
                 let sitBonus = document.getElementById('damageInput')?.value;
-                macro += `{{damage=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+                let joiningChar = '+';
+                if (sitBonus?.length && ['+','-'].includes(sitBonus[0])){
+                    joiningChar = '';
+                }
+                macro += `{{damage=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
                 if (window?.powerBoxSettings?.multiDamage){
                     for (let x = 1; x < targets; x++){
-                        macro += `{{damage ${ x+1 }=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `+${sitBonus}` : '' }]]}}`;
+                        macro += `{{damage ${ x+1 }=[[${ power['Damage'] || weapon['Damage'] }${ sitBonus ? `${ joiningChar }${ sitBonus }` : '' }]]}}`;
                     }
                 }
             }
             if (power?.['Crit Damage']?.replaceAll(' ', '') || weapon?.['Crit Damage']?.replaceAll(' ', '')){
                 let sitBonus = document.getElementById('damageInput')?.value;
-                macro += `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `+${sitBonus.replaceAll('d', '*')}` : '' }]]}}`;
+                let joiningChar = '+';
+                if (sitBonus?.length && ['+','-'].includes(sitBonus[0])){
+                    joiningChar = '';
+                }
+                macro += `{{Crit Damage=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `${ joiningChar }${ sitBonus.replaceAll('d', '*') }` : '' }]]}}`;
                 if (window?.powerBoxSettings?.multiDamage){
                     for (let x = 1; x < targets; x++){
-                        macro += `{{Crit Damage ${ x+1 }=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `+${sitBonus.replaceAll('d', '*')}` : '' }]]}}`;
+                        macro += `{{Crit Damage ${ x+1 }=[[${ power['Crit Damage'] || weapon['Crit Damage'] }${ sitBonus ? `${ joiningChar }${ sitBonus.replaceAll('d', '*') }` : '' }]]}}`;
                     }
                 }
             }
