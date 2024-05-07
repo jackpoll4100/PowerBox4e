@@ -60,9 +60,9 @@ There are several convenience features you can use while rolling powers as well:
 
 ![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/1b12798a-542c-4dca-88fe-dff45ec98bfa)
 
-2) You can add situational bonuses in the "Situational Bonuses" menu, this is also hidden behind the toggle (bonuses still apply after closing the menu, and will persist until you reset/remove them). For powers the relevant bonuses are "Attack Bonus" and "Damage Bonus". These work with numbers or dice formulas:
+2) You can add situational modifiers in the "Situational Modifiers" menu, this is also hidden behind the toggle (modifiers still apply after closing the menu, and will persist until you reset/remove them). For powers the relevant modifiers are "Attack Modifier" and "Damage Modifier". These work with numbers or dice formulas:
 
-![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/62389094-9153-4b50-9d75-f41d5a7d5647)
+![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/3a8ba899-7924-49da-93a8-322acf7dd8f4)
 
 ### To Roll a Skill Check
 1) Select the skill you want to use from skill dropdown (You can type with the dropdown open to search/filter to the skill you want).
@@ -70,13 +70,13 @@ There are several convenience features you can use while rolling powers as well:
 
 This will roll the skill check in the chat.
 Note:
-Similar to powers, you can apply a situational bonus to a skill check using the "Skill Bonus" input under the "Situational Bonuses" menu.
+Similar to powers, you can apply a situational modifier to a skill check using the "Skill Modifier" input under the "Situational Modifiers" menu.
 
 ### To Roll a Saving Throw
 1) Hit the "Saving Throw" button.
 
 Note:
-Similar to powers and skill checks, you can apply a situational bonus to a skill check using the "Saving Throw Bonus" input under the "Situational Bonuses" menu.
+Similar to powers and skill checks, you can apply a situational modifier to a skill check using the "Saving Throw Modifier" input under the "Situational Modifiers" menu.
 
 ## Other Features
 
@@ -86,18 +86,18 @@ Besides the settings mentioned above, there is also an "Auto check powers" setti
 2) The power name used on your character sheet must match the name of the power on your sheet in the character builder.
 3) You must have your character sheet open in the same tab when rolling powers.
 
-Besides the situational bonuses explained above, you can also track situational defense bonuses in the "Situational Bonuses" menu. Note that this is purely for keeping track during a session and has no mechanical effect at the moment.
+Besides the situational modifiers explained above, you can also track situational defense modifiers in the "Situational Modifiers" menu. Note that this is purely for keeping track during a session and has no mechanical effect at the moment.
 
 Note:
 Settings are saved to your browser storage along with your character sheet and so will persist whenever you come back to roll20.
-Situational Bonuses do not do this currnetly, they are tracked only so long as the browser tab where you have applied them is open.
+Situational Modifiers do not do this currnetly, they are tracked only so long as the browser tab where you have applied them is open.
 
 ## Caveats/Known Issues:
 
--In the default Roll20 macro template, power cards take up quite a lot of space, partially because 4e powers have a lot in them and partially due to the layout of the power cards. I'm looking into making a custom roll template that saves space but if so it would require pro access to add it to your game or I'd need to get it added to the 4e sheet. I've thought about adjusting it to use the 4e character sheet macro but that one doesn't support as many attributes as I want and so ends up looking garbled when used currently.
+-In the default Roll20 macro template, power cards take up quite a lot of space, partially because 4e powers have a lot in them and partially due to the layout of the power cards. I'm looking into making a custom roll template that saves space but if so it would require pro access to add it to your game or I'd need to get it added to the 4e sheet. I've thought about adjusting it to use the 4e character sheet macro but that one doesn't support as many attributes as I want and ends up looking garbled when used currently.
 
 -There is not currently a "delete character" button. You can always just upload a new sheet and it will overwrite whatever is there, but if you want to delete your character info completely for some reason, you have to do it from the inspector by deleting the key named "powerBox" from the Roll20 LocalStorage under the Application tab. I don't recommend messing with this stuff unless you know what you're doing already, its more hassle than its worth but I will be adding a delete character button soon to handle this automatically.
 
 -If you don't want the ui controls to appear, you just need to toggle off the script from the extension menu.
 
--I've tested this with quite a few character sheets and classes but obviously 4e has an insane amount of powers and interactions between those powers and feats, secondary powers, etc., so there are bound to buggy powers and issues I haven't encountered yet. If you hit a bug/a power that doesn't work properly, the best thing to do if you're sending me a bug report is to summarize what happened, what settings or situational mods you had turned on, and send a copy of the macro log. If you open the web inspector you should see that each power macro will appear in the console with a message like: ```Power Box - Executing Macro: <Macro here>```, this is what is most helpful. Sharing the character sheet file is also helpful.
+-I've tested this with quite a few character sheets and classes but obviously 4e has an insane amount of powers and interactions between those powers and feats, secondary powers, etc., so there are bound to buggy powers and issues I haven't encountered yet. If you hit a bug/a power that doesn't work properly, the best thing to do if you're sending me a bug report is to summarize what happened, what settings or situational mods you had turned on, and send a copy of the macro log. If you open the web inspector you should see that each power macro will appear in the console with a message like: ```Power Box - Executing Macro: <Macro here>```, this is what is most helpful. Sharing the character sheet file is also very helpful.
