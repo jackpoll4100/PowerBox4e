@@ -2,7 +2,7 @@
 // @name         PowerBox4e
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers from them.
+// @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers/skills from them.
 // @author       jackson pollard
 // @match        https://app.roll20.net/editor/
 // @icon         https://cdn-icons-png.flaticon.com/512/6729/6729800.png
