@@ -5,7 +5,7 @@
 // @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers/skills from them.
 // @author       jackson pollard
 // @match        https://app.roll20.net/editor/
-// @icon         https://cdn-icons-png.flaticon.com/512/6729/6729800.png
+// @icon         https://raw.githubusercontent.com/jackpoll4100/PowerBox4e/main/d20.png
 // @grant        none
 // ==/UserScript==
 
