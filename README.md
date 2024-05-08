@@ -51,7 +51,9 @@ Things that aren't currently supported but may be in the future:
 
 ### To Roll a Power
 
-1) Select the power you want to use from the dropdown above the file selector (You can type with the dropdown open to search/filter to the power you want).
+Note: For however many weapons you have added to your character sheet, each power/weapon combo will appear in the dropdown. You simply need to select the one that matches the weapon you are wanting to use when there are multiple options.
+
+1) Select the power (or power/weapon combo if there are multiple) you want to use from the dropdown above the file selector (You can type with the dropdown open to search/filter to the power you want).
 2) Hit the "Use Power" button.
 
 This will automatically roll the power and display it in full in the chat.
