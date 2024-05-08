@@ -99,6 +99,8 @@ Situational Modifiers do not do this currnetly, they are tracked only so long as
 
 -There is not currently a "delete character" button. You can always just upload a new sheet and it will overwrite whatever is there, but if you want to delete your character info completely for some reason, you have to do it from the inspector by deleting the key named "powerBox" from the Roll20 LocalStorage under the Application tab. I don't recommend messing with this stuff unless you know what you're doing already, its more hassle than its worth but I will be adding a delete character button soon to handle this automatically.
 
+-Item Powers have less info than other powers since they don't have the same power card metadata in the character sheet.
+
 -If you don't want the ui controls to appear, you just need to toggle off the script from the extension menu.
 
 -I've tested this with quite a few character sheets and classes but obviously 4e has an insane amount of powers and interactions between those powers and feats, secondary powers, etc., so there are bound to buggy powers and issues I haven't encountered yet. If you hit a bug/a power that doesn't work properly, the best thing to do if you're sending me a bug report is to summarize what happened, what settings or situational mods you had turned on, and send a copy of the macro log. If you open the web inspector you should see that each power macro will appear in the console with a message like: ```Power Box - Executing Macro: <Macro here>```, this is what is most helpful. Sharing the character sheet file is also very helpful.
