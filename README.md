@@ -5,6 +5,9 @@ Note that this tool does not use the Roll20 api and so should not require you to
 ## Overview
 This is a ```UserScript```, meaning it needs to be used with a browser extension like [TamperMonkey](https://www.tampermonkey.net/) or [ViolentMonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag) etc.
 
+Once you have one of those extensions, you can enable it by clicking the install button on this page:
+https://greasyfork.org/en/scripts/494440-powerbox4e-for-roll20
+
 When enabled, it injects an additional set of user interface tools into the Roll20 ui whenever you load into a game. These should appear below the chat box and should look something like this:
 
 ![image](https://github.com/jackpoll4100/PowerBox4e/assets/43215677/4edd7c40-1220-4243-b81b-45d4716db3c9)
