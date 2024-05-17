@@ -46,6 +46,8 @@ The main things Power Box supports right now:
 
 -Roll saving throws.
 
+-Roll Initiative.
+
 Things that aren't currently supported but may be in the future:
 
 -Tracking character resources (HP, AP, Surges, Gold, etc.).
@@ -74,15 +76,22 @@ There are several convenience features you can use while rolling powers as well:
 1) Select the skill you want to use from skill dropdown (You can type with the dropdown open to search/filter to the skill you want).
 2) Hit the "Skill Check" button.
 
-This will roll the skill check in the chat.
+Your roll result should appear in the chat
 Note:
 Similar to powers, you can apply a situational modifier to a skill check using the "Skill Modifier" input under the "Situational Modifiers" menu.
 
 ### To Roll a Saving Throw
 1) Hit the "Saving Throw" button.
 
+Your roll result should appear in the chat.
 Note:
-Similar to powers and skill checks, you can apply a situational modifier to a skill check using the "Saving Throw Modifier" input under the "Situational Modifiers" menu.
+Similar to powers and skill checks, you can apply a situational modifier to a saving throw using the "Saving Throw Modifier" input under the "Situational Modifiers" menu.
+
+### To Roll Initiative
+1) Make sure you have your token on the map selected.
+2) Hit the "Initiative" button.
+
+Your roll will appear in the chat and your character should be added to the turn tracker.
 
 ## Other Features
 
