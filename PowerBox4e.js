@@ -244,7 +244,7 @@
                 window.execMacro('Error: No initiative bonus found, please import a character first (or reimport your character sheet if it was added in an older version).');
                 return;
             }
-            let macro = `&{template:default} {{name=Initiative}} {{result=[[1d20+${ window.foundCharacter.initiativeBonus }]]}}`;
+            let macro = `&{template:default} {{name=Initiative}} {{result=[[1d20+${ window.foundCharacter.initiativeBonus } &{tracker}]]}}`;
             window.execMacro(macro);
         }
 
