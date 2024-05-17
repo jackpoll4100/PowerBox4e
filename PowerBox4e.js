@@ -44,10 +44,22 @@
         </div>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <input style="margin: 5px; width: 100%;" type="file" id="uploadedFile" />
-            <span id="usePower" class="btn" style="
-                padding: 5px;
+            <span id="initiativeButton" class="btn" style="
+                padding: 2px;
                 margin: 5px;
-                min-width: 70px;
+                min-width: 48px;
+                border-radius: 5px;
+                display: inline-grid;
+                align-items: center;
+                text-align: center;
+                cursor: pointer;"
+                class="hideUI">
+                    Initiative
+            </span>
+            <span id="usePower" class="btn" style="
+                padding: 3px;
+                margin: 5px;
+                min-width: 60px;
                 border-radius: 5px;
                 display: inline-grid;
                 align-items: center;
@@ -93,7 +105,14 @@
         targetsInput.style = elStyles + ' width: 25%;';
         actionBox.appendChild(targetsInput);
 
-        document.getElementById("usePower").addEventListener("click",function() {
+        document.getElementById('initiativeButton').addEventListener('click', function(){
+            window.constructInitiativeRoll();
+        });
+
+        document.getElementById('usePower').addEventListener('click', function() {
+            if (!window?.foundCharacter){
+                window.execMacro('Error: No character found. Please import a character first.');
+            }
             let powerQuery = document.getElementById('powerDropdown').value;
             powerQuery = powerQuery.split('||');
             let targets = parseInt(document.getElementById('myTargets').value || 1);
@@ -220,6 +239,15 @@
             window.execMacro(macro);
         }
 
+        function constructInitiativeRoll(){
+            if (!window?.foundCharacter?.initiativeBonus){
+                window.execMacro('Error: No initiative bonus found, please import a character first (or reimport your character sheet if it was added in an older version).');
+                return;
+            }
+            let macro = `&{template:default} {{name=Initiative}} {{result=[[1d20+${ window.foundCharacter.initiativeBonus }]]}}`;
+            window.execMacro(macro);
+        }
+
         function constructMacro(power, weapon, targets){
             let macro = `&{template:default} {{name=${power.Name}}}`;
             let attributes = ['Flavor','Power','Charge','Display','Channel Divinity','Power Type','Attack','Effect','Aftereffect','Axe','Mace','Heavy Blade','Spear or Polearm','Hit','Miss','Power Usage','Keywords','Action Type','Attack Type','Target','Targets','Requirement','Special','Weapon','Conditions'];
@@ -285,6 +313,9 @@
 
         // Add saving throw constructor to the window context.
         window.constructSavingThrow = constructSavingThrow;
+
+        // Add initiative constructor to the window context.
+        window.constructInitiativeRoll = constructInitiativeRoll;
 
         // Add macro exec to the window context.
         window.execMacro = execMacro;
@@ -388,6 +419,9 @@
                 for (let skill of skills){
                     skillMods[`${ skill }`] = doc.querySelectorAll(`alias[name="${ skill }"]`)[0].parentElement.getAttribute('value');
                 }
+
+                // Construct initiative bonus
+                let initiativeBonus = doc.querySelectorAll(`alias[name="Initiative"]`)[0].parentElement.getAttribute('value');
 
                 let weaponDiceMap = {};
 
@@ -506,6 +540,7 @@
                     level,
                     statMods,
                     skillMods,
+                    initiativeBonus,
                     weaponDiceMap
                 };
                 window.foundCharacter = characterObj;
