@@ -7,6 +7,8 @@
 // @match        https://app.roll20.net/editor/
 // @icon         https://raw.githubusercontent.com/jackpoll4100/PowerBox4e/main/d20.png
 // @grant        none
+// @downloadURL https://update.greasyfork.org/scripts/494440/PowerBox4e%20for%20Roll20.user.js
+// @updateURL https://update.greasyfork.org/scripts/494440/PowerBox4e%20for%20Roll20.meta.js
 // ==/UserScript==
 
 (function() {
@@ -299,9 +301,6 @@
                     }
                 }
             }
-            if (power?.['Crit Components']?.replaceAll(' ', '') || weapon?.['Crit Components']?.replaceAll(' ', '')){
-                macro += `{{Crit Components=${ power['Crit Components'] || weapon['Crit Components'] }}}`;
-            }
             return macro;
         }
 
@@ -465,7 +464,9 @@
                                 weaponDiceMap[tempWeapon.Weapon] = `${ diceNoSpaces.slice(1, 3) }`;
                             }
                         }
+                        let hasCrit = false;
                         if (weapons[y].getElementsByTagName('CritDamage')?.length){
+                            hasCrit = true;
                             tempWeapon['Crit Damage'] = weapons[y].getElementsByTagName('CritDamage')[0].innerHTML;
                         }
                         else {
@@ -476,6 +477,50 @@
                         }
                         if (weapons[y].getElementsByTagName('CritComponents')?.length){
                             tempWeapon['Crit Components'] = weapons[y].getElementsByTagName('CritComponents')[0].innerHTML;
+                        }
+                        else {
+                            let shortRule = weapons[y].querySelector('RulesElement[type="Magic Item"]')?.getAttribute('internal-id');
+                            if (shortRule){
+                                let critSet = doc.querySelectorAll(`specific[name="Critical"]`);
+                                for (let x of critSet){
+                                    if (x?.parentElement?.getAttribute('internal-id') === shortRule){
+                                        tempWeapon['Crit Components'] = x.innerHTML;
+                                    }
+                                }
+                            }
+                        }
+                        function sanitizeCrits(crit, reconstructedString, plus){
+                            let finalString = crit.replaceAll(' ', '') || '0';
+                            let diceFound = reconstructedString.match(/[0-9][0-9]*d[0-9][0-9]*/g);
+                            if (diceFound?.length){
+                                let matchedSet = [];
+                                for (let x = 0; x < diceFound.length; x++){
+                                    let add = true;
+                                    for (let y = 0; y < diceFound.length; y++){
+                                        if (x !== y && diceFound[y] !== diceFound[x] && diceFound[y].includes(diceFound[x])){
+                                            add = false;
+                                        }
+                                    }
+                                    if (add && !matchedSet.includes(diceFound[x])){
+                                        matchedSet.push(diceFound[x]);
+                                    }
+                                }
+                                for (let match of matchedSet){
+                                    if (reconstructedString.includes('per plus') && plus){
+                                        for (let x = 0; x < plus; x++){
+                                            finalString += '+' + match;
+                                        }
+                                    }
+                                    else {
+                                        finalString += '+' + match;
+                                    }
+                                }
+                            }
+                            return finalString;
+                        }
+                        if (!hasCrit && tempWeapon['Crit Components']){
+                            let bonus = parseInt(tempWeapon.Weapon.replace(/\D/g,''));
+                            tempWeapon['Crit Damage'] = sanitizeCrits(tempWeapon['Crit Damage'], tempWeapon['Crit Components'], bonus);
                         }
                         tempPower.Weapons.push(tempWeapon);
                         tempPower.WeaponMap[tempWeapon.Weapon] = tempWeapon;
