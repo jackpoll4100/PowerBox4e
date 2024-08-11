@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         PowerBox4e for Roll20
 // @namespace    jackpoll4100
-// @version      1.2
+// @version      1.3
 // @description  Creates a ui for roll20 that allows for importing dnd 4e character sheets and rolling powers/skills from them.
 // @author       jackson pollard
 // @match        https://app.roll20.net/editor/
+// @match        https://*.discordsays.com/*
 // @icon         https://raw.githubusercontent.com/jackpoll4100/PowerBox4e/main/d20.png
 // @grant        none
 // ==/UserScript==
