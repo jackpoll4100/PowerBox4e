@@ -15,6 +15,12 @@ When enabled, it injects an additional set of user interface tools into the Roll
 
 The goal of this tool is to make it easier to use the sheet built in the 4e character creator as the main source of truth for your character and prevent the friction of needing to manually enter power details and learn how macros work to be able to use 4e powers in Roll20.
 
+Note, if you are on Google Chrome, Brave, and Opera (and possibly Firefox now too, see note below), you will need to turn on the developer mode extension setting for Tampermonkey to work properly, see the instructions here (Note, you may also need to set the "Allow Userscripts" toggle for the extension as well, this is also covered in the page linked below):
+
+https://www.tampermonkey.net/faq.php#Q209
+
+I have heard from some people that this was necessary on Firefox as well despite Firefox supporting manifest V2 (deprecated by Chrome). So bear in mind this may or may not be necessary depending on which extension you use for installing userscripts in Firefox.
+
 ## Getting Started
 
 Once you add the userscript to the extension of your choice, the first step in using it is preparing and uploading your character sheet.
